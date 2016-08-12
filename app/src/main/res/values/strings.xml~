@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">CustDialog</string>
+    <string name="press">Press</string>
+    <string name="alias">alias</string>
+    <string name="contact">contact</string>
+    <string-array name="options">
+        <item>Contacts</item>
+        <item>Messages</item>
+        <item>Send Message</item>
+         </string-array>/
+</resources>
