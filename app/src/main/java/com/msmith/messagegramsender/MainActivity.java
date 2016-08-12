@@ -17,6 +17,7 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
+import java.util.HashMap;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -76,7 +77,9 @@ public class MainActivity extends AppCompatActivity {
               Packet packet  = helper.getPacket(db,(int)id);
               Contact contact = helper.getContact(db,packet.getAlias_id());
                Message message = helper.getMessage(db,packet.getMessage_id());
-               sendSMSMessage(contact.getAddress(),message.getMsg());
+               HashMap<String,String>  contactValues  = ContactUtils.getContactDetail(MainActivity.this,contact.getContactId());
+               String contactNumber = contactValues.get("contactNumber");
+               sendSMSMessage(contactNumber,message.getMsg());
            }
        };
          favorites.setOnItemClickListener(itemClickListener);

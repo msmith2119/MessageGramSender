@@ -5,12 +5,16 @@ package com.msmith.messagegramsender;
  */
 public class Contact {
     private String alias;
-    private String  address;
+    private String name;
+    private String contactId;
 
-    public Contact() {alias="";address="";}
-    public Contact(String alias,String address){
+    public Contact() {alias="";name="";contactId="";}
+
+
+    public Contact(String alias, String name,String contactId){
         this.alias=alias;
-        this.address=address;
+       this.name = name;
+        this.contactId=contactId;
     }
 
     public String getAlias() {
@@ -21,11 +25,20 @@ public class Contact {
         this.alias = alias;
     }
 
-    public String getAddress() {
-        return address;
+
+    public String getName() {
+        return name;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getContactId() {
+        return contactId;
+    }
+
+    public void setContactId(String contactId) {
+        this.contactId = contactId;
     }
 }

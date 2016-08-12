@@ -16,9 +16,9 @@ public class ContactDatabaseHelper extends SQLiteOpenHelper {
     public static final String DB_NAME = "custdialog";
     public static final int DB_VERION = 1;
 
-    public static final String CREATE_CONTACTS_SQL = "create table contact(_id integer primary key autoincrement, alias text, address  text);";
+    public static final String CREATE_CONTACTS_SQL = "create table contact(_id integer primary key autoincrement, alias text, name text, contact_id text);";
     public static final String CREATE_MESSAGE_SQL = "create table message(_id integer primary key autoincrement, name text, msg  text);";
-    public static final String CREATE_PACKET_SQL = "create table packet(_id integer primary key autoincrement,name text, alias_id integer,message_id text, msg  text);";
+    public static final String CREATE_PACKET_SQL = "create table packet(_id integer primary key autoincrement,name text, alias_id integer,message_id text);";
     public ContactDatabaseHelper(Context context) { super(context,DB_NAME,null,DB_VERION); }
 
     @Override
@@ -30,7 +30,7 @@ public class ContactDatabaseHelper extends SQLiteOpenHelper {
     public  Cursor getDBContactsCursor(SQLiteDatabase db ){
 
 
-        Cursor cursor = db.query("contact",new String[]{"_id","alias","address"},null,null,null,null,null);
+        Cursor cursor = db.query("contact",new String[]{"_id","alias","name","contact_id"},null,null,null,null,null);
         return cursor;
 
     }
@@ -61,7 +61,8 @@ public class ContactDatabaseHelper extends SQLiteOpenHelper {
 
         ContentValues contentValues =  new ContentValues();
         contentValues.put("alias",contact.getAlias());
-        contentValues.put("address",contact.getAddress());
+        contentValues.put("name",contact.getName());
+        contentValues.put("contact_id",contact.getContactId());
 
         return db.insert("contact",null,contentValues);
     }
@@ -83,8 +84,11 @@ public class ContactDatabaseHelper extends SQLiteOpenHelper {
         Cursor cursor = db.query("contact",new String[]{"alias","address"},"_id=?",new String[]{Integer.toString(pos)},null,null,null);
         if(cursor.moveToFirst()){
             String alias = cursor.getString(0);
-            String address = cursor.getString(1);
-            contact = new Contact(alias,address);
+            String name = cursor.getString(1);
+            String contactId = cursor.getString(2);
+
+
+            contact = new Contact(alias,name,contactId);
         }
 
         return  contact;
@@ -140,7 +144,8 @@ public class ContactDatabaseHelper extends SQLiteOpenHelper {
          }
          ContentValues contentValues = new ContentValues();
          contentValues.put("alias",contact.getAlias());
-         contentValues.put("address",contact.getAddress());
+         contentValues.put("name",contact.getName());
+         contentValues.put("contact_id",contact.getContactId());
 
          db.update("contact",contentValues,"_id = ?",new String[] {Integer.toString(id)});
      }
@@ -162,7 +167,7 @@ public class ContactDatabaseHelper extends SQLiteOpenHelper {
             db.execSQL(CREATE_CONTACTS_SQL);
             db.execSQL(CREATE_MESSAGE_SQL);
             db.execSQL(CREATE_PACKET_SQL);
-            Contact contact = new Contact("anne","anne.smith.com");
+            Contact contact = new Contact("anne","Anne","id1234");
             int  alias_id = (int)insertContact(db,contact);
             Message message = new Message("late","running late");
             int message_id = (int)insertMessage(db,message);

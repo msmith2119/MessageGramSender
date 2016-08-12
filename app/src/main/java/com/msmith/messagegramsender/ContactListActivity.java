@@ -43,7 +43,7 @@ public class ContactListActivity extends ListActivity  {
             cursor =  helper.getDBContactsCursor(db);
             ListView listContacts = getListView();
             //CursorAdapter cursorAdapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_1, cursor, new String[]{"name"}, new int[]{android.R.id.text1}, 0);
-            adapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_2, cursor, new String[]{"alias","address"}, new int[]{android.R.id.text1,android.R.id.text2}, 0);
+            adapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_2, cursor, new String[]{"alias","name"}, new int[]{android.R.id.text1,android.R.id.text2}, 0);
             listContacts.setAdapter(adapter);
         } catch(SQLiteException e){
             Log.v("Contact",e.toString());
@@ -77,7 +77,7 @@ public class ContactListActivity extends ListActivity  {
         Log.v("onclick","id="+id);
         if(id >=0) {
             aliasText.setText(contact.getAlias());
-            contactText.setText(contact.getAddress());
+            contactText.setText(contact.getName());
         }
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setView(content);
@@ -85,7 +85,7 @@ public class ContactListActivity extends ListActivity  {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 contact.setAlias(aliasText.getText().toString());
-                contact.setAddress(contactText.getText().toString());
+                contact.setName(contactText.getText().toString());
                 dbHelper.updateContact(db,contact,(int)id);
                 updateAdapter();
 

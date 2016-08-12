@@ -18,6 +18,8 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import java.util.HashMap;
+
 /**
  * Created by morgan on 8/9/16.
  */
@@ -60,7 +62,9 @@ public class SendMessageActivity extends Activity {
           int message_id = (int)mSpinner.getSelectedItemId();
           Contact contact = helper.getContact(db,alias_id);
           Message message = helper.getMessage(db,message_id);
-         sendSMSMessage(contact.getAddress(),message.getMsg());
+         HashMap<String,String> contactValues = ContactUtils.getContactDetail(this,contact.getContactId());
+         String contactPhone = contactValues.get("contactPhone");
+         sendSMSMessage(contactPhone,message.getMsg());
          if(!helper.hasPacket(db,alias_id,message_id)){
              Packet  packet = new Packet(message.getName()+"->"+contact.getAlias(),alias_id,message_id);
              helper.insertPacket(db,packet);
