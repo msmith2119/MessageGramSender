@@ -81,7 +81,7 @@ public class ContactDatabaseHelper extends SQLiteOpenHelper {
         }
 
         Contact contact = null;
-        Cursor cursor = db.query("contact",new String[]{"alias","address"},"_id=?",new String[]{Integer.toString(pos)},null,null,null);
+        Cursor cursor = db.query("contact",new String[]{"alias","name","contact_id"},"_id=?",new String[]{Integer.toString(pos)},null,null,null);
         if(cursor.moveToFirst()){
             String alias = cursor.getString(0);
             String name = cursor.getString(1);

@@ -3,6 +3,7 @@ package com.msmith.messagegramsender;
 import android.content.Context;
 import android.database.Cursor;
 import android.provider.ContactsContract;
+import android.util.Log;
 
 import java.util.HashMap;
 
@@ -12,7 +13,7 @@ import java.util.HashMap;
 public class ContactUtils {
 
     public static HashMap<String, String> getContactDetail(Context context,String lookup_id) {
-
+Log.v("contactDetail","lookup_id="+lookup_id);
         HashMap<String, String> values = new HashMap<String, String>();
         Cursor cursorPhone = context.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
                 new String[]{ContactsContract.CommonDataKinds.Phone.NUMBER, ContactsContract.CommonDataKinds.Nickname.DISPLAY_NAME, ContactsContract.Data.LOOKUP_KEY},
@@ -25,7 +26,7 @@ public class ContactUtils {
                 null);
 
         if (cursorPhone.moveToFirst()) {
-
+Log.v("contactDetail","extracting detail");
             values.put("contactNumber", cursorPhone.getString(cursorPhone.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)));
             values.put("contactName", cursorPhone.getString(cursorPhone.getColumnIndex(ContactsContract.CommonDataKinds.Nickname.DISPLAY_NAME)));
             values.put("contactKey", cursorPhone.getString(cursorPhone.getColumnIndex(ContactsContract.Data.LOOKUP_KEY)));

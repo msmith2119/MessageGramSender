@@ -3,6 +3,8 @@
     <string name="press">Press</string>
     <string name="alias">alias</string>
     <string name="contact">contact</string>
+    <string name="enter_alias">Alias name</string>
+    <string name="search_contact">Contact</string>
     <string-array name="options">
         <item>Contacts</item>
         <item>Messages</item>
