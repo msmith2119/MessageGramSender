@@ -5,13 +5,15 @@ package com.msmith.messagegramsender;
  */
 public class Packet {
 
+    private  int id;
     private  String name;
     private int alias_id;
     private int message_id;
 
-    public Packet() { this.name = ""; alias_id = -1; message_id =-1;}
+    public Packet() { this.name = "";id=-1; alias_id = -1; message_id =-1;}
 
-    public Packet(String name, int  alias_id, int message_id){
+    public Packet(int id,String name, int  alias_id, int message_id){
+        this.id = id;
         this.name = name;
         this.alias_id=alias_id;
         this.message_id=message_id;
@@ -38,5 +40,13 @@ public class Packet {
 
     public void setMessage_id(int message_id) {
         this.message_id = message_id;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

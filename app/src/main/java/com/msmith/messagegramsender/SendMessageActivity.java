@@ -63,24 +63,23 @@ public class SendMessageActivity extends Activity {
           Contact contact = helper.getContact(db,alias_id);
           Message message = helper.getMessage(db,message_id);
          HashMap<String,String> contactValues = ContactUtils.getContactDetail(this,contact.getContactId());
-         String contactPhone = contactValues.get("contactPhone");
+         String contactPhone = contactValues.get("contactNumber");
          sendSMSMessage(contactPhone,message.getMsg());
          if(!helper.hasPacket(db,alias_id,message_id)){
-             Packet  packet = new Packet(message.getName()+"->"+contact.getAlias(),alias_id,message_id);
+             Packet  packet = new Packet(-1,message.getName()+"->"+contact.getAlias(),alias_id,message_id);
              helper.insertPacket(db,packet);
          }
-         Log.v("onSendClicked","itemId="+cSpinner.getSelectedItemId());
 
 
      }
 
     protected void sendSMSMessage(String phoneNo, String message) {
-        Log.i("Send SMS", "");
 
         try {
             SmsManager smsManager = SmsManager.getDefault();
-            smsManager.sendTextMessage(phoneNo, null, message, null, null);
             Log.v("sendSMSMessage","smsManager.sendTextMessage("+phoneNo+", null, "+message+", null, null)");
+            smsManager.sendTextMessage(phoneNo, null, message, null, null);
+
             Toast.makeText(getApplicationContext(), "SMS sent.", Toast.LENGTH_LONG).show();
 
         }

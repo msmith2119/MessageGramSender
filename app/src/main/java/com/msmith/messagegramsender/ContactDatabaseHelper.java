@@ -7,6 +7,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by morgan on 8/6/16.
  */
@@ -118,16 +121,46 @@ public class ContactDatabaseHelper extends SQLiteOpenHelper {
             return new Packet();
         }
         Packet packet = null;
-        Cursor cursor = db.query("packet", new String[]{"name", "alias_id","message_id"}, "_id=?", new String[]{Integer.toString(pos)}, null, null, null);
+        Cursor cursor = db.query("packet", new String[]{"_id","name", "alias_id","message_id"}, "_id=?", new String[]{Integer.toString(pos)}, null, null, null);
         if (cursor.moveToFirst()) {
-            String name = cursor.getString(0);
-            int alias_id = cursor.getInt(1);
-            int message_id = cursor.getInt(2);
-            packet = new Packet(name,alias_id,message_id);
+            int p_id = cursor.getInt(0);
+            String name = cursor.getString(1);
+            int alias_id = cursor.getInt(2);
+            int message_id = cursor.getInt(3);
+            packet = new Packet(p_id,name,alias_id,message_id);
         }
 
         return packet;
 
+    }
+
+    public List<Packet> getPacketsByAlias(SQLiteDatabase db, int  id) {
+        ArrayList<Packet> packets = new ArrayList<Packet>();
+        Cursor cursor = db.query("packet", new String[]{"_id","name", "alias_id","message_id"}, "alias_id=?", new String[]{Integer.toString(id)}, null, null, null);
+        while(cursor.moveToNext()){
+            int p_id = cursor.getInt(0);
+            String name = cursor.getString(1);
+            int alias_id = cursor.getInt(2);
+            int message_id = cursor.getInt(3);
+            Packet packet = new Packet(p_id,name,alias_id,message_id);
+            packets.add(packet);
+        }
+       cursor.close();
+        return packets;
+    }
+    public List<Packet> getPacketsByMessage(SQLiteDatabase db, int  id) {
+        ArrayList<Packet> packets = new ArrayList<Packet>();
+        Cursor cursor = db.query("packet", new String[]{"_id","name", "alias_id","message_id"}, "message_id=?", new String[]{Integer.toString(id)}, null, null, null);
+        while(cursor.moveToNext()){
+            int p_id = cursor.getInt(0);
+            String name = cursor.getString(1);
+            int alias_id = cursor.getInt(2);
+            int message_id = cursor.getInt(3);
+            Packet packet = new Packet(p_id,name,alias_id,message_id);
+            packets.add(packet);
+        }
+        cursor.close();
+        return packets;
     }
     public  boolean hasPacket( SQLiteDatabase db, int alias_id_in, int message_id_in) {
 
@@ -137,6 +170,36 @@ public class ContactDatabaseHelper extends SQLiteOpenHelper {
 
     }
 
+    public void deleteContact(SQLiteDatabase db,int id){
+
+
+
+        db.delete("contact","_id = ?",new String[] {Integer.toString(id)});
+        List<Packet> packets = getPacketsByAlias(db,id);
+        for(Packet packet : packets){
+            deletePacket(db,packet.getId());
+        }
+
+    }
+    public void deleteMessage(SQLiteDatabase db,int id){
+
+
+
+        db.delete("message","_id = ?",new String[] {Integer.toString(id)});
+        List<Packet> packets = getPacketsByMessage(db,id);
+        for(Packet packet : packets){
+            deletePacket(db,packet.getId());
+        }
+
+    }
+    public void deletePacket(SQLiteDatabase db,int id){
+
+
+        db.delete("packet","_id = ?",new String[] {Integer.toString(id)});
+
+
+
+    }
      public void updateContact(SQLiteDatabase db,Contact contact,int id){
          if(id <0){
              insertContact(db,contact);
@@ -171,7 +234,7 @@ public class ContactDatabaseHelper extends SQLiteOpenHelper {
             int  alias_id = (int)insertContact(db,contact);
             Message message = new Message("late","running late");
             int message_id = (int)insertMessage(db,message);
-            Packet packet = new Packet(message.getName()+"->"+contact.getAlias(),alias_id,message_id);
+            Packet packet = new Packet(-1,message.getName()+"->"+contact.getAlias(),alias_id,message_id);
             insertPacket(db,packet);
 
 

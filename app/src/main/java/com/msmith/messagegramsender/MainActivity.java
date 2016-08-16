@@ -1,6 +1,8 @@
 package com.msmith.messagegramsender;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -76,10 +78,27 @@ public class MainActivity extends AppCompatActivity {
               db = helper.getReadableDatabase();
               Packet packet  = helper.getPacket(db,(int)id);
               Contact contact = helper.getContact(db,packet.getAlias_id());
-               Message message = helper.getMessage(db,packet.getMessage_id());
+               final Message message = helper.getMessage(db,packet.getMessage_id());
                HashMap<String,String>  contactValues  = ContactUtils.getContactDetail(MainActivity.this,contact.getContactId());
-               String contactNumber = contactValues.get("contactNumber");
-               sendSMSMessage(contactNumber,message.getMsg());
+               final String contactNumber = contactValues.get("contactNumber");
+               AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+               builder.setMessage("Send "+packet.getName());
+
+               builder.setPositiveButton("Send", new DialogInterface.OnClickListener() {
+                   @Override
+                   public void onClick(DialogInterface dialog, int which) {
+                       sendSMSMessage(contactNumber,message.getMsg());
+                   }
+               });
+               builder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                   @Override
+                   public void onClick(DialogInterface dialog, int which) {
+                       dialog.dismiss();
+                   }
+               });
+               AlertDialog dialog = builder.create();
+               dialog.show();
+
            }
        };
          favorites.setOnItemClickListener(itemClickListener);
@@ -90,7 +109,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     protected void sendSMSMessage(String phoneNo, String message) {
-        Log.i("Send SMS", "");
         if(!canSendSMS()){
             Toast.makeText(getApplicationContext(), "permission denied sending SMS", Toast.LENGTH_LONG).show();
             return;

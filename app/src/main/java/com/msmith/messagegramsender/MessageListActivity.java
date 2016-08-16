@@ -7,66 +7,89 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.CheckBox;
 import android.widget.CursorAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by morgan on 8/9/16.
  */
-public class MessageListActivity extends ListActivity {
+public class MessageListActivity extends AppCompatActivity {
 
     private SQLiteDatabase db;
     private Cursor cursor;
     private LayoutInflater inflater;
     private CursorAdapter adapter;
+    private AdapterView.OnItemClickListener itemClickListener;
+    private ListView messagesList;
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message);
+
         try {
             ContactDatabaseHelper helper = new ContactDatabaseHelper(this);
             db = helper.getReadableDatabase();
             cursor = helper.getDBMessageCursor(db);
-            ListView listMessages = getListView();
+          messagesList = (ListView)findViewById(R.id.messages_list);
 
-            adapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_2, cursor, new String[]{"name", "msg"}, new int[]{android.R.id.text1, android.R.id.text2}, 0);
-            listMessages.setAdapter(adapter);
+            adapter = new SimpleCursorAdapter(this, R.layout.message_list_item, cursor, new String[]{"name", "msg"}, new int[]{R.id.message_name}, 0);
+            messagesList.setAdapter(adapter);
         } catch (SQLiteException e) {
 
             Toast toast = Toast.makeText(this, "Database unavailable", Toast.LENGTH_SHORT);
             toast.show();
         }
+
+
+
+        itemClickListener = new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, final long id) {
+                doClick(messagesList,view,position,id);
+            }
+        };
+        messagesList.setOnItemClickListener(itemClickListener);
     }
-        @Override
-        protected void onListItemClick(ListView l, View v, int position, final long id) {
-            inflater = getLayoutInflater();
-            View content = inflater.inflate(R.layout.mydialog,null);
+
+        protected void doClick(ListView l, View v, int position, final long id) {
+           ;
+            View content = getLayoutInflater().inflate(R.layout.edit_message,null);
 
             final ContactDatabaseHelper dbHelper = new ContactDatabaseHelper(this);
             db = dbHelper.getWritableDatabase();
             final Message message = dbHelper.getMessage(db,(int)id);
-            final EditText aliasText = (EditText)content.findViewById(R.id.alias);
-            final EditText contactText = (EditText)content.findViewById(R.id.contact);
+            final EditText messageNameText = (EditText)content.findViewById(R.id.message_name);
+            final EditText messageText = (EditText)content.findViewById(R.id.message_text);
 
             if(id >=0) {
-                aliasText.setText(message.getName());
-                contactText.setText(message.getMsg());
+              messageNameText.setText(message.getName());
+              messageText.setText(message.getMsg());
+
             }
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setView(content);
             builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    message.setName(aliasText.getText().toString());
-                    message.setMsg(contactText.getText().toString());
+                    message.setName(messageNameText.getText().toString());
+                    message.setMsg(messageText.getText().toString());
                     dbHelper.updateMessage(db,message,(int)id);
                     updateAdapter();
 
@@ -81,12 +104,63 @@ public class MessageListActivity extends ListActivity {
             });
             AlertDialog dialog = builder.create();
             dialog.show();
-            super.onListItemClick(l, v, position, id);
+
         }
 
     public void onClickAdd(View view){
-        onListItemClick(null,null,-1,-1);
+        doClick(null,null,-1,-1);
     }
+    public void onClickDelete(View view){
+        AlertDialog.Builder builder = new AlertDialog.Builder(MessageListActivity.this);
+        builder.setMessage("Delete checked messages?");
+
+        builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                doDelete();
+            }
+        });
+        builder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+    }
+
+    private void doDelete() {
+        ListView listView =   messagesList;
+
+        int n = listView.getChildCount();
+
+        ContactDatabaseHelper helper = new ContactDatabaseHelper(this);
+        db  = helper.getWritableDatabase();
+
+        boolean edited = false;
+        List<Integer> ids = new ArrayList<Integer>();
+        for(int i = 0; i <n;i++) {
+            View listItemView = listView.getChildAt(i);
+            CheckBox cbView = (CheckBox) listItemView.findViewById(R.id.cbdel);
+            Cursor item = (Cursor) listView.getAdapter().getItem(i);
+            int id = item.getInt(0);
+
+            if (cbView.isChecked()) {
+                ids.add(id);
+
+            }
+        }
+        for ( Integer idx : ids){
+            edited=true;
+            helper.deleteMessage(db,idx);
+        }
+          if(edited)
+              updateAdapter();
+
+        }
+
     private void updateAdapter() {
 
         ContactDatabaseHelper helper = new ContactDatabaseHelper(this);

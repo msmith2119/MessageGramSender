@@ -116,13 +116,6 @@ public class ContactCallbackHandler implements LoaderManager.LoaderCallbacks<Cur
     }
 
     private void doMySearch(String query){
-//           Log.v("search","query="+query);
-//           String[] values = new String[]{"anne","morgan","john","scott"};
-//           ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-//                   android.R.layout.simple_list_item_1, android.R.id.text1, values);
-//
-//           ListView listView = (ListView)findViewById(R.id.list_results);
-//           listView.setAdapter(adapter);
         setupList(query);
     }
 
@@ -162,9 +155,6 @@ public class ContactCallbackHandler implements LoaderManager.LoaderCallbacks<Cur
                     contactName = cursorPhone.getString(cursorPhone.getColumnIndex(ContactsContract.CommonDataKinds.Nickname.DISPLAY_NAME));
                     contactKey = cursorPhone.getString(cursorPhone.getColumnIndex(ContactsContract.Data.LOOKUP_KEY));
                 }
-                Log.v("onclick","contactNumber="+contactNumber);
-                Log.v("onclick","name="+contactName);
-                Log.v("onclick","contactKey="+contactKey);
 
 
                 cursorPhone.close();
@@ -193,14 +183,6 @@ public class ContactCallbackHandler implements LoaderManager.LoaderCallbacks<Cur
 
         EditText aliasText = (EditText) contactView.findViewById(R.id.alias);
         String alias = aliasText.getText().toString();
-        Log.v("onclick","alias="+alias);
-        Log.v("onclick","name="+contactName);
-        Log.v("onclick","number="+contactNumber);
-        Log.v("onclick","lookup="+contactKey);
-
-
-
-
 
     }
 
@@ -248,7 +230,6 @@ public class ContactCallbackHandler implements LoaderManager.LoaderCallbacks<Cur
 
     private void dumpCursor(Cursor data){
         while(data.moveToNext()){
-            Log.v("onLoad","columns="+data.getColumnNames());
             int i = 0;
             for(String col : data.getColumnNames()){
                 Log.v("onload","col="+col);
