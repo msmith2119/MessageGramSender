@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MessageGramSender</string>
+    <string name="app_name">MessageGram Sender</string>
     <string name="press">Press</string>
     <string name="alias">alias</string>
     <string name="contact">contact</string>
@@ -9,5 +9,6 @@
         <item>Contacts</item>
         <item>Messages</item>
         <item>Send Message</item>
+        <item>Quick Send</item>
          </string-array>/
 </resources>

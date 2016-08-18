@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <item
+            android:id="@+id/main_activity"
+            android:title="Home" />
+
+        <item
+            android:id="@+id/contacts_activity"
+            android:title="Contacts" />
+        <item
+            android:id="@+id/send_activity"
+            android:title="Send Message"></item>
+        <item
+            android:id="@+id/quick_send_activity"
+            android:title="Quick Send"></item>
+
+</menu>

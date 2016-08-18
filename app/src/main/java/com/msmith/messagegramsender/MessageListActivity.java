@@ -10,6 +10,9 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
@@ -68,6 +71,23 @@ public class MessageListActivity extends AppCompatActivity {
         messagesList.setOnItemClickListener(itemClickListener);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.messages_menu, menu);
+        getSupportActionBar().setTitle("Messages");
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        ToolBarActivityLauncher.handleToolbarSelection(this,item.getItemId());
+        return true;
+
+
+
+    }
         protected void doClick(ListView l, View v, int position, final long id) {
            ;
             View content = getLayoutInflater().inflate(R.layout.edit_message,null);

@@ -10,14 +10,19 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+
 import android.telephony.SmsManager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import java.util.HashMap;
 
@@ -47,12 +52,17 @@ public class MainActivity extends AppCompatActivity {
                     Intent intent= new Intent(MainActivity.this,SendMessageActivity.class);
                     startActivity(intent);
                 }
+                else if (position == 3){
+                    Intent intent= new Intent(MainActivity.this,QuickSendActivity.class);
+                    startActivity(intent);
+                }
             }
         };
         ListView listView = (ListView)findViewById(R.id.list_options);
         listView.setOnItemClickListener(itemClickListener);
 
-        setUpFavorites();
+
+       // setUpFavorites();
 
 
 
@@ -107,7 +117,22 @@ public class MainActivity extends AppCompatActivity {
 
    }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        return true;
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        ToolBarActivityLauncher.handleToolbarSelection(this,item.getItemId());
+        return true;
+
+
+
+    }
     protected void sendSMSMessage(String phoneNo, String message) {
         if(!canSendSMS()){
             Toast.makeText(getApplicationContext(), "permission denied sending SMS", Toast.LENGTH_LONG).show();

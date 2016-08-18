@@ -12,6 +12,9 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.SmsManager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.CursorAdapter;
 import android.widget.SimpleCursorAdapter;
@@ -23,7 +26,7 @@ import java.util.HashMap;
 /**
  * Created by morgan on 8/9/16.
  */
-public class SendMessageActivity extends Activity {
+public class SendMessageActivity extends AppCompatActivity {
 
     private Spinner cSpinner;
     private Spinner mSpinner;
@@ -48,6 +51,24 @@ public class SendMessageActivity extends Activity {
         mSpinner.setAdapter(mAdapter);
         if(!canSendSMS())
         requestPermissions(new String[]{Manifest.permission.SEND_SMS},1223);
+
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.send_message_menu, menu);
+        getSupportActionBar().setTitle("Send Message");
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        ToolBarActivityLauncher.handleToolbarSelection(this,item.getItemId());
+        return true;
+
 
 
     }

@@ -15,6 +15,9 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
@@ -28,6 +31,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -47,6 +51,7 @@ public class ContactListActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contacts);
 
@@ -75,12 +80,32 @@ public class ContactListActivity extends AppCompatActivity {
                 doClick(contactsView,view,position,id);
             }
         };
+
+        contactsView.setOnItemClickListener(itemClickListener);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.contacts_menu, menu);
+        getSupportActionBar().setTitle("Contacts");
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        ToolBarActivityLauncher.handleToolbarSelection(this,item.getItemId());
+        return true;
+
+
+
     }
 
     protected void doClick(ListView parent,View view, int position,final long id){
 
         View content = getLayoutInflater().inflate(R.layout.edit_contact,null);
-        searchHandler = new ContactCallbackHandler(content,getLoaderManager());
+        searchHandler = new ContactCallbackHandler(content,getLoaderManager(),getContentResolver());
         searchHandler.init();
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setView(content);
@@ -88,7 +113,22 @@ public class ContactListActivity extends AppCompatActivity {
         db = dbHelper.getWritableDatabase();
         final Contact contact = dbHelper.getContact(db,(int)id);
         final EditText aliasText = (EditText)content.findViewById(R.id.alias);
-        final EditText contactText = (EditText)content.findViewById(R.id.contact);
+        final TextView contactNameText = (TextView)content.findViewById(R.id.contact_name);
+        final TextView phoneText = (TextView)content.findViewById(R.id.number);
+
+
+        if(id >0 ){
+            Log.v("contact","contact_id="+contact.getContactId());
+            Map<String,String> contactInfo = ContactUtils.getContactDetail( this,contact.getContactId());
+            String name = contactInfo.get("contactName");
+            String number = contactInfo.get("contactNumber");
+            aliasText.setText(contact.getAlias());
+            contactNameText.setText(name);
+            phoneText.setText(number);
+            Log.v("doClick","name="+name);
+
+
+        }
         builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -98,15 +138,20 @@ public class ContactListActivity extends AppCompatActivity {
              contact.setAlias(aliasText.getText().toString());
              if(searchHandler.getContactKey() != null){
                  contact.setName(searchHandler.getContactName());
+                 Log.v("contact","contactName="+searchHandler.getContactName());
+                 Log.v("contact","contactId="+searchHandler.getContactName());
                  contact.setContactId(searchHandler.getContactKey());
              }
                     dbHelper.updateContact(db,contact,(int)id);
                 }
 
                 else {
+                    Log.v("contact","contactName="+searchHandler.getContactName());
+                    Log.v("contact","contactId="+searchHandler.getContactName());
                     contact.setAlias(aliasText.getText().toString());
                     contact.setName(searchHandler.getContactName());
                     contact.setContactId(searchHandler.getContactKey());
+                    Log.v("contact","setting contact="+contact.getContactId());
                     dbHelper.updateContact(db,contact,(int)id);
                 }
 
