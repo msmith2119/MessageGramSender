@@ -20,6 +20,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CursorAdapter;
 import android.widget.EditText;
@@ -41,12 +42,11 @@ public class ContactListActivity extends AppCompatActivity {
 
     private SQLiteDatabase db;
     private Cursor cursor;
-    private LayoutInflater  inflater;
+    private LayoutInflater inflater;
     private CursorAdapter adapter;
     private ContactCallbackHandler searchHandler;
     private ListView contactsView;
     AdapterView.OnItemClickListener itemClickListener;
-
 
 
     @Override
@@ -60,8 +60,6 @@ public class ContactListActivity extends AppCompatActivity {
             ContactDatabaseHelper helper = new ContactDatabaseHelper(this);
             db = helper.getReadableDatabase();
             cursor = helper.getDBContactsCursor(db);
-
-            //CursorAdapter cursorAdapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_1, cursor, new String[]{"name"}, new int[]{android.R.id.text1}, 0);
             adapter = new SimpleCursorAdapter(this, R.layout.contacts_list_item, cursor, new String[]{"alias", "name"}, new int[]{android.R.id.text1, android.R.id.text2}, 0);
             contactsView.setAdapter(adapter);
         } catch (SQLiteException e) {
@@ -70,14 +68,14 @@ public class ContactListActivity extends AppCompatActivity {
         }
 
 
-        if(!canReadContacts())
-            requestPermissions(new String[]{Manifest.permission.READ_CONTACTS},1223);
+        if (!canReadContacts())
+            requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, 1223);
 
 
         itemClickListener = new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, final long id) {
-                doClick(contactsView,view,position,id);
+                doClick(contactsView, view, position, id);
             }
         };
 
@@ -95,37 +93,34 @@ public class ContactListActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        ToolBarActivityLauncher.handleToolbarSelection(this,item.getItemId());
+        ToolBarActivityLauncher.handleToolbarSelection(this, item.getItemId());
         return true;
-
-
-
     }
 
-    protected void doClick(ListView parent,View view, int position,final long id){
+    protected void doClick(ListView parent, View view, int position, final long id) {
 
-        View content = getLayoutInflater().inflate(R.layout.edit_contact,null);
-        searchHandler = new ContactCallbackHandler(content,getLoaderManager(),getContentResolver());
+        View content = getLayoutInflater().inflate(R.layout.edit_contact, null);
+        searchHandler = new ContactCallbackHandler(content, getLoaderManager());
         searchHandler.init();
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setView(content);
         final ContactDatabaseHelper dbHelper = new ContactDatabaseHelper(this);
         db = dbHelper.getWritableDatabase();
-        final Contact contact = dbHelper.getContact(db,(int)id);
-        final EditText aliasText = (EditText)content.findViewById(R.id.alias);
-        final TextView contactNameText = (TextView)content.findViewById(R.id.contact_name);
-        final TextView phoneText = (TextView)content.findViewById(R.id.number);
+        final Contact contact = dbHelper.getContact(db, (int) id);
+        final EditText aliasText = (EditText) content.findViewById(R.id.alias);
+        final TextView contactNameText = (TextView) content.findViewById(R.id.contact_name);
+        final TextView phoneText = (TextView) content.findViewById(R.id.number);
 
 
-        if(id >0 ){
-            Log.v("contact","contact_id="+contact.getContactId());
-            Map<String,String> contactInfo = ContactUtils.getContactDetail( this,contact.getContactId());
+        if (id > 0) {
+
+            Map<String, String> contactInfo = ContactUtils.getContactDetail(this, contact.getContactId());
             String name = contactInfo.get("contactName");
             String number = contactInfo.get("contactNumber");
             aliasText.setText(contact.getAlias());
             contactNameText.setText(name);
             phoneText.setText(number);
-            Log.v("doClick","name="+name);
+
 
 
         }
@@ -133,44 +128,34 @@ public class ContactListActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
-                if(aliasText.getText().toString().length() == 0){
+                if (aliasText.getText().toString().length() == 0) {
                     Toast toast = Toast.makeText(ContactListActivity.this, "Error:empty alias", Toast.LENGTH_SHORT);
                     toast.show();
                     return;
 
                 }
-                if(id>0){
+                if (id > 0) { // This is an edit
 
-             contact.setAlias(aliasText.getText().toString());
-             if(searchHandler.getContactKey() != null){
-                 contact.setName(searchHandler.getContactName());
-                 Log.v("contact","contactName="+searchHandler.getContactName());
-                 Log.v("contact","contactId="+searchHandler.getContactName());
-                 contact.setContactId(searchHandler.getContactKey());
-             }
-                    dbHelper.updateContact(db,contact,(int)id);
-                }
-
-                else {
-                    if(aliasText.getText().toString().length() == 0 || searchHandler.getContactKey() == null){
+                    contact.setAlias(aliasText.getText().toString());
+                    if (searchHandler.getContactKey() != null) { // new contact optionally set
+                        contact.setName(searchHandler.getContactName());
+                        contact.setContactId(searchHandler.getContactKey());
+                    }
+                    dbHelper.updateContact(db, contact, (int) id);
+                } else { // this is a create
+                    if (searchHandler.getContactKey() == null) { //  a contact must be chosen
                         Toast toast = Toast.makeText(ContactListActivity.this, "Error:empty contact, ", Toast.LENGTH_SHORT);
                         toast.show();
                         return;
 
                     }
-                    Log.v("contact","contactName="+searchHandler.getContactName());
-                    Log.v("contact","contactId="+searchHandler.getContactName());
+
                     contact.setAlias(aliasText.getText().toString());
                     contact.setName(searchHandler.getContactName());
                     contact.setContactId(searchHandler.getContactKey());
-                    Log.v("contact","setting contact="+contact.getContactId());
-                    dbHelper.updateContact(db,contact,(int)id);
+                    dbHelper.updateContact(db, contact, (int) id);
                 }
 
-
-                //contact.setAlias(aliasText.getText().toString());
-                //contact.setName(contactText.getText().toString());
-                //dbHelper.updateContact(db,contact,(int)id);
                 updateAdapter();
 
             }
@@ -184,23 +169,27 @@ public class ContactListActivity extends AppCompatActivity {
         });
         AlertDialog dialog = builder.create();
         dialog.show();
-       // super.onListItemClick(l, v, position, id);
+
     }
 
 
-      public void onClickAdd(View view){
-        itemClickListener.onItemClick(null,null,-1,-1);
-      }
-    public void onClickDelete(View view){
+    public void onClickAdd(View view) {
+        itemClickListener.onItemClick(null, null, -1, -1);
+    }
 
+    public void onClickDelete(View view) {
 
+         final List<Integer> ids = getChecked();
+          if(ids.size() == 0){
+              return;
+          }
         AlertDialog.Builder builder = new AlertDialog.Builder(ContactListActivity.this);
         builder.setMessage("Delete checked contacts?");
 
         builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                 doDelete();
+                doDelete(ids);
             }
         });
         builder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
@@ -213,16 +202,29 @@ public class ContactListActivity extends AppCompatActivity {
         dialog.show();
     }
 
-         private void doDelete() {
-        ListView listView =   contactsView;
+    private void doDelete(List<Integer> ids) {
 
-        int n = listView.getChildCount();
+
 
         ContactDatabaseHelper helper = new ContactDatabaseHelper(this);
-        db  = helper.getWritableDatabase();
-        boolean edited = false;
-             List<Integer> ids = new ArrayList<Integer>();
-        for(int i = 0; i <n;i++) {
+        db = helper.getWritableDatabase();
+
+        for (Integer idx : ids) {
+
+            helper.deleteContact(db, idx);
+        }
+
+        updateAdapter();
+    }
+
+
+    private List<Integer> getChecked() {
+        ListView listView = contactsView;
+        int n = listView.getChildCount();
+
+        List<Integer> ids = new ArrayList<Integer>();
+
+        for (int i = 0; i < n; i++) {
             View listItemView = listView.getChildAt(i);
             CheckBox cbView = (CheckBox) listItemView.findViewById(R.id.cbdel);
             Cursor item = (Cursor) listView.getAdapter().getItem(i);
@@ -230,38 +232,26 @@ public class ContactListActivity extends AppCompatActivity {
             if (cbView.isChecked()) {
                 ids.add(id);
             }
-           }
-
-            for ( Integer idx : ids){
-                edited=true;
-                helper.deleteContact(db,idx);
-            }
-
-
-            if(edited)
-                updateAdapter();
         }
+        return ids;
 
+    }
+    private void updateAdapter() {
 
-      private void updateAdapter() {
-
-          ContactDatabaseHelper helper = new ContactDatabaseHelper(this);
-          db = helper.getReadableDatabase();
-          cursor =  helper.getDBContactsCursor(db);
-          adapter.changeCursor(cursor);
-      }
-
-
+        ContactDatabaseHelper helper = new ContactDatabaseHelper(this);
+        db = helper.getReadableDatabase();
+        cursor = helper.getDBContactsCursor(db);
+        adapter.changeCursor(cursor);
+    }
 
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if(canReadContacts()){
+        if (canReadContacts()) {
             Toast toast = Toast.makeText(this, "Can read contacts", Toast.LENGTH_SHORT);
             toast.show();
-        }
-        else {
+        } else {
             Toast toast = Toast.makeText(this, "read contacts denied", Toast.LENGTH_SHORT);
             toast.show();
         }
@@ -269,12 +259,12 @@ public class ContactListActivity extends AppCompatActivity {
 
     private boolean canReadContacts() {
 
-        return(hasPermission(Manifest.permission.READ_CONTACTS));
+        return (hasPermission(Manifest.permission.READ_CONTACTS));
 
     }
 
     private boolean hasPermission(String perm) {
-        return(PackageManager.PERMISSION_GRANTED==checkSelfPermission(perm));
+        return (PackageManager.PERMISSION_GRANTED == checkSelfPermission(perm));
     }
 
 }

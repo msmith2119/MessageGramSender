@@ -39,18 +39,18 @@ public class SendMessageActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_send_message);
-        cSpinner = (Spinner)findViewById(R.id.aliases_spinner);
-       mSpinner = (Spinner)findViewById(R.id.message_spinner);
+        cSpinner = (Spinner) findViewById(R.id.aliases_spinner);
+        mSpinner = (Spinner) findViewById(R.id.message_spinner);
         ContactDatabaseHelper helper = new ContactDatabaseHelper(this);
         db = helper.getReadableDatabase();
-        cursor =  helper.getDBContactsCursor(db);
+        cursor = helper.getDBContactsCursor(db);
         cAdapter = new SimpleCursorAdapter(this, android.R.layout.simple_spinner_dropdown_item, cursor, new String[]{"alias"}, new int[]{android.R.id.text1}, 0);
         cSpinner.setAdapter(cAdapter);
         cursor = helper.getDBMessageCursor(db);
-        mAdapter =  new SimpleCursorAdapter(this, android.R.layout.simple_spinner_dropdown_item, cursor, new String[]{"name"}, new int[]{android.R.id.text1}, 0);
+        mAdapter = new SimpleCursorAdapter(this, android.R.layout.simple_spinner_dropdown_item, cursor, new String[]{"name"}, new int[]{android.R.id.text1}, 0);
         mSpinner.setAdapter(mAdapter);
-        if(!canSendSMS())
-        requestPermissions(new String[]{Manifest.permission.SEND_SMS},1223);
+        if (!canSendSMS())
+            requestPermissions(new String[]{Manifest.permission.SEND_SMS}, 1223);
 
 
     }
@@ -66,46 +66,42 @@ public class SendMessageActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        ToolBarActivityLauncher.handleToolbarSelection(this,item.getItemId());
+        ToolBarActivityLauncher.handleToolbarSelection(this, item.getItemId());
         return true;
-
 
 
     }
 
-     public void onSendClicked(View view){
-         int id1 = cSpinner.getId();
-         int id2 = mSpinner.getId();
-
-          ContactDatabaseHelper helper = new ContactDatabaseHelper(this);
-          db = helper.getWritableDatabase();
-          int alias_id = (int)cSpinner.getSelectedItemId();
-          int message_id = (int)mSpinner.getSelectedItemId();
-          Contact contact = helper.getContact(db,alias_id);
-          Message message = helper.getMessage(db,message_id);
-         HashMap<String,String> contactValues = ContactUtils.getContactDetail(this,contact.getContactId());
-         String contactPhone = contactValues.get("contactNumber");
-         sendSMSMessage(contactPhone,message.getMsg());
-         if(!helper.hasPacket(db,alias_id,message_id)){
-             Packet  packet = new Packet(-1,message.getName()+"->"+contact.getAlias(),alias_id,message_id);
-             helper.insertPacket(db,packet);
-         }
+    public void onSendClicked(View view) {
 
 
-     }
+        ContactDatabaseHelper helper = new ContactDatabaseHelper(this);
+        db = helper.getWritableDatabase();
+        int alias_id = (int) cSpinner.getSelectedItemId();
+        int message_id = (int) mSpinner.getSelectedItemId();
+        Contact contact = helper.getContact(db, alias_id);
+        Message message = helper.getMessage(db, message_id);
+        HashMap<String, String> contactValues = ContactUtils.getContactDetail(this, contact.getContactId());
+        String contactPhone = contactValues.get("contactNumber");
+        sendSMSMessage(contactPhone, message.getMsg());
+        if (!helper.hasPacket(db, alias_id, message_id)) {
+            Packet packet = new Packet(-1, message.getName() + "->" + contact.getAlias(), alias_id, message_id);
+            helper.insertPacket(db, packet);
+        }
+
+
+    }
 
     protected void sendSMSMessage(String phoneNo, String message) {
 
         try {
             SmsManager smsManager = SmsManager.getDefault();
-            Log.v("sendSMSMessage","smsManager.sendTextMessage("+phoneNo+", null, "+message+", null, null)");
+            Log.v("sendSMSMessage", "smsManager.sendTextMessage(" + phoneNo + ", null, " + message + ", null, null)");
             smsManager.sendTextMessage(phoneNo, null, message, null, null);
 
             Toast.makeText(getApplicationContext(), "SMS sent.", Toast.LENGTH_LONG).show();
 
-        }
-
-        catch (Exception e) {
+        } catch (Exception e) {
             Toast.makeText(getApplicationContext(), "SMS faild, please try again.", Toast.LENGTH_LONG).show();
             e.printStackTrace();
             return;
@@ -117,18 +113,19 @@ public class SendMessageActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
-        if(!canSendSMS()) {
+        if (!canSendSMS()) {
             Toast.makeText(getApplicationContext(), "SMS Permission denied", Toast.LENGTH_LONG).show();
         }
 
     }
+
     private boolean canSendSMS() {
 
-        return(hasPermission(Manifest.permission.SEND_SMS));
+        return (hasPermission(Manifest.permission.SEND_SMS));
 
     }
 
     private boolean hasPermission(String perm) {
-        return(PackageManager.PERMISSION_GRANTED==checkSelfPermission(perm));
+        return (PackageManager.PERMISSION_GRANTED == checkSelfPermission(perm));
     }
 }

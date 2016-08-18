@@ -28,19 +28,18 @@ import java.util.Map;
 /**
  * Created by morgan on 8/12/16.
  */
-public class ContactCallbackHandler implements LoaderManager.LoaderCallbacks<Cursor>,AdapterView.OnItemClickListener{
+public class ContactCallbackHandler implements LoaderManager.LoaderCallbacks<Cursor>, AdapterView.OnItemClickListener {
     private View contactView;
-    private  String contactKey;
-    private  String contactNumber;
-    private  String contactName;
+    private String contactNumber;
+    private String contactName;
     private LoaderManager loaderManager;
-    private ContentResolver resolver;
 
-  public ContactCallbackHandler(View contactView, LoaderManager loaderManager, ContentResolver resolver){
-      this.contactView = contactView;
-      this.loaderManager = loaderManager;
-      this.resolver = resolver;
-  }
+
+    public ContactCallbackHandler(View contactView, LoaderManager loaderManager) {
+        this.contactView = contactView;
+        this.loaderManager = loaderManager;
+
+    }
 
     @SuppressLint("InlinedApi")
     private final static String[] FROM_COLUMNS = {
@@ -73,13 +72,13 @@ public class ContactCallbackHandler implements LoaderManager.LoaderCallbacks<Cur
     // Defines a variable for the search string
     private String mSearchString;
     // Defines the array to hold values that replace the ?
-    private String[] mSelectionArgs = { mSearchString };
+    private String[] mSelectionArgs = {mSearchString};
 
     @SuppressLint("InlinedApi")
     private static final String SELECTION =
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ?
-                    ContactsContract.Contacts.DISPLAY_NAME_PRIMARY + " LIKE ? AND "+ContactsContract.Contacts.HAS_PHONE_NUMBER+" = 1" :
-                    ContactsContract.Contacts.DISPLAY_NAME + " LIKE ? AND "+ContactsContract.Contacts.HAS_PHONE_NUMBER+" = 1";
+                    ContactsContract.Contacts.DISPLAY_NAME_PRIMARY + " LIKE ? AND " + ContactsContract.Contacts.HAS_PHONE_NUMBER + " = 1" :
+                    ContactsContract.Contacts.DISPLAY_NAME + " LIKE ? AND " + ContactsContract.Contacts.HAS_PHONE_NUMBER + " = 1";
 
     @SuppressLint("InlinedApi")
     private static final String[] PROJECTION =
@@ -98,7 +97,7 @@ public class ContactCallbackHandler implements LoaderManager.LoaderCallbacks<Cur
 
     public void init() {
 
-        SearchView searchView= (SearchView)contactView.findViewById(R.id.search_view);
+        SearchView searchView = (SearchView) contactView.findViewById(R.id.search_view);
         searchView.setQueryHint("Search View");
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -120,18 +119,16 @@ public class ContactCallbackHandler implements LoaderManager.LoaderCallbacks<Cur
         });
     }
 
-    private void doMySearch(String query){
+    private void doMySearch(String query) {
         setupList(query);
     }
 
-    private  void setupList(String query) {
+    private void setupList(String query) {
         Loader loader = loaderManager.getLoader(0);
-        if(loader != null)
-           loaderManager.destroyLoader(0);
-
-
-        mSearchString=query;
-        mContactsList = (ListView)contactView.findViewById(R.id.list_results);
+        if (loader != null)
+            loaderManager.destroyLoader(0);
+        mSearchString = query;
+        mContactsList = (ListView) contactView.findViewById(R.id.list_results);
         mCursorAdapter = new SimpleCursorAdapter(
                 contactView.getContext(),
                 R.layout.contacts_list_item,
@@ -140,28 +137,27 @@ public class ContactCallbackHandler implements LoaderManager.LoaderCallbacks<Cur
                 0);
 
         mContactsList.setAdapter(mCursorAdapter);
-        AdapterView.OnItemClickListener itemClickListener =new AdapterView.OnItemClickListener() {
+
+        AdapterView.OnItemClickListener itemClickListener = new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-Log.v("callback","ID="+id);
 
                 Cursor cursor = ((SimpleCursorAdapter) parent.getAdapter()).getCursor();
                 String lookup_id = cursor.getString(1);
-                mContactId =  id;
+                mContactId = id;
                 mContactKey = lookup_id;
 
-                Map<String,String>  contactInfo = ContactUtils.getContactDetail(contactView.getContext(),lookup_id);
-                contactName  = contactInfo.get("contactName");
+                Map<String, String> contactInfo = ContactUtils.getContactDetail(contactView.getContext(), lookup_id);
+                contactName = contactInfo.get("contactName");
                 contactNumber = contactInfo.get("contactNumber");
 
-                TextView nameText = (TextView)contactView.findViewById(R.id.contact_name);
-                TextView numText = (TextView)contactView.findViewById(R.id.number);
+                TextView nameText = (TextView) contactView.findViewById(R.id.contact_name);
+                TextView numText = (TextView) contactView.findViewById(R.id.number);
                 nameText.setText(contactName);
                 numText.setText(contactNumber);
-                ListView res = (ListView)contactView.findViewById(R.id.list_results);
+                ListView res = (ListView) contactView.findViewById(R.id.list_results);
                 res.setAdapter(null);
                 contactView.findViewById(R.id.search_view).clearFocus();
-
 
 
             }
@@ -172,16 +168,13 @@ Log.v("callback","ID="+id);
 
     }
 
-    public  String getContactName() { return contactName;}
-    public String getContactKey() { return mContactKey;}
-    public void saveContact() {
-
-        EditText aliasText = (EditText) contactView.findViewById(R.id.alias);
-        String alias = aliasText.getText().toString();
-
+    public String getContactName() {
+        return contactName;
     }
 
-
+    public String getContactKey() {
+        return mContactKey;
+    }
 
 
     @Override
@@ -217,22 +210,8 @@ Log.v("callback","ID="+id);
     }
 
 
-
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Log.v("onclick","position="+position+" id="+id);
-        Cursor cursor = ((SimpleCursorAdapter) parent.getAdapter()).getCursor();
-        dumpCursor(cursor);
-    }
 
-    public static  void dumpCursor(Cursor data){
-        while(data.moveToNext()){
-            int i = 0;
-            for(String col : data.getColumnNames()){
-                Log.v("onload","col="+col);
-                Log.v("onload","val="+data.getString(i++));
-            }
-
-        }
     }
 }

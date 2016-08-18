@@ -8,7 +8,6 @@ import android.provider.ContactsContract;
 import android.util.Log;
 
 
-
 import java.util.HashMap;
 
 /**
@@ -16,21 +15,21 @@ import java.util.HashMap;
  */
 public class ContactUtils {
 
-    public static HashMap<String, String> getContactDetail(Context context, String lookupKey ) {
+    public static HashMap<String, String> getContactDetail(Context context, String lookupKey) {
         HashMap<String, String> values = new HashMap<String, String>();
 
         Cursor cursorPhone = context.getContentResolver().query(
                 ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                new String[]{ContactsContract.CommonDataKinds.Phone.NUMBER,ContactsContract.CommonDataKinds.Nickname.DISPLAY_NAME,ContactsContract.CommonDataKinds.Phone.LOOKUP_KEY},
+                new String[]{ContactsContract.CommonDataKinds.Phone.NUMBER, ContactsContract.CommonDataKinds.Nickname.DISPLAY_NAME, ContactsContract.CommonDataKinds.Phone.LOOKUP_KEY},
                 ContactsContract.CommonDataKinds.Phone.LOOKUP_KEY + " = ? AND " +
                         ContactsContract.CommonDataKinds.Phone.TYPE + " = " +
                         ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE,
-                new String[] {lookupKey},
+                new String[]{lookupKey},
                 null
         );
 
 
-        ContactCallbackHandler.dumpCursor(cursorPhone);
+
         if (cursorPhone.moveToFirst()) {
             values.put("contactNumber", cursorPhone.getString(cursorPhone.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)));
             values.put("contactName", cursorPhone.getString(cursorPhone.getColumnIndex(ContactsContract.CommonDataKinds.Nickname.DISPLAY_NAME)));
@@ -39,9 +38,6 @@ public class ContactUtils {
         }
         return values;
     }
-
-
-
 
 
 }

@@ -19,7 +19,6 @@
         <activity android:name=".MessageListActivity" />
         <activity android:name=".SendMessageActivity" />
         <activity android:name=".QuickSendActivity" />
-        <activity android:name=".FormActivity"></activity>
     </application>
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
