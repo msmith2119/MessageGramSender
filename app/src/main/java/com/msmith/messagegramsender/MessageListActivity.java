@@ -108,6 +108,16 @@ public class MessageListActivity extends AppCompatActivity {
             builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
+                    String messageName = messageNameText.getText().toString();
+                    String msg = messageText.getText().toString();
+                    Log.v("mlist","messageName = "+messageName);
+                    Log.v("mlist","msg = "+msg);
+                    if(messageName == null || messageName.length() == 0 || msg == null || msg.length()==0){
+
+                        Toast toast = Toast.makeText(MessageListActivity.this, "Error : empty field(s)", Toast.LENGTH_SHORT);
+                        toast.show();
+                        return;
+                    }
                     message.setName(messageNameText.getText().toString());
                     message.setMsg(messageText.getText().toString());
                     dbHelper.updateMessage(db,message,(int)id);

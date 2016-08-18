@@ -133,8 +133,14 @@ public class ContactListActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
+                if(aliasText.getText().toString().length() == 0){
+                    Toast toast = Toast.makeText(ContactListActivity.this, "Error:empty alias", Toast.LENGTH_SHORT);
+                    toast.show();
+                    return;
 
+                }
                 if(id>0){
+
              contact.setAlias(aliasText.getText().toString());
              if(searchHandler.getContactKey() != null){
                  contact.setName(searchHandler.getContactName());
@@ -146,6 +152,12 @@ public class ContactListActivity extends AppCompatActivity {
                 }
 
                 else {
+                    if(aliasText.getText().toString().length() == 0 || searchHandler.getContactKey() == null){
+                        Toast toast = Toast.makeText(ContactListActivity.this, "Error:empty contact, ", Toast.LENGTH_SHORT);
+                        toast.show();
+                        return;
+
+                    }
                     Log.v("contact","contactName="+searchHandler.getContactName());
                     Log.v("contact","contactId="+searchHandler.getContactName());
                     contact.setAlias(aliasText.getText().toString());
