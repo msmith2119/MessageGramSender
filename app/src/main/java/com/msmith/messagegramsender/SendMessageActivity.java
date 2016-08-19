@@ -2,7 +2,9 @@ package com.msmith.messagegramsender;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -52,6 +54,8 @@ public class SendMessageActivity extends AppCompatActivity {
         if (!canSendSMS())
             requestPermissions(new String[]{Manifest.permission.SEND_SMS}, 1223);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 
     }
 
@@ -75,19 +79,37 @@ public class SendMessageActivity extends AppCompatActivity {
     public void onSendClicked(View view) {
 
 
-        ContactDatabaseHelper helper = new ContactDatabaseHelper(this);
+        final ContactDatabaseHelper helper = new ContactDatabaseHelper(this);
         db = helper.getWritableDatabase();
-        int alias_id = (int) cSpinner.getSelectedItemId();
-        int message_id = (int) mSpinner.getSelectedItemId();
-        Contact contact = helper.getContact(db, alias_id);
-        Message message = helper.getMessage(db, message_id);
+        final int alias_id = (int) cSpinner.getSelectedItemId();
+        final int message_id = (int) mSpinner.getSelectedItemId();
+        final Contact contact = helper.getContact(db, alias_id);
+        final Message message = helper.getMessage(db, message_id);
         HashMap<String, String> contactValues = ContactUtils.getContactDetail(this, contact.getContactId());
-        String contactPhone = contactValues.get("contactNumber");
-        sendSMSMessage(contactPhone, message.getMsg());
-        if (!helper.hasPacket(db, alias_id, message_id)) {
-            Packet packet = new Packet(-1, message.getName() + "->" + contact.getAlias(), alias_id, message_id);
-            helper.insertPacket(db, packet);
-        }
+        final String contactPhone = contactValues.get("contactNumber");
+        AlertDialog.Builder builder = new AlertDialog.Builder(SendMessageActivity.this);
+        builder.setMessage("Send " +contact.getAlias()+" message "+message.getName());
+
+        builder.setPositiveButton("Send", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                sendSMSMessage(contactPhone, message.getMsg());
+                if (!helper.hasPacket(db, alias_id, message_id)) {
+                    Packet packet = new Packet(-1, message.getName() + "->" + contact.getAlias(), alias_id, message_id);
+                    helper.insertPacket(db, packet);
+                }
+
+            }
+        });
+        builder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
 
 
     }

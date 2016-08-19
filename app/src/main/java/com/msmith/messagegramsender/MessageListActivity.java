@@ -66,6 +66,7 @@ public class MessageListActivity extends AppCompatActivity {
             }
         };
         messagesList.setOnItemClickListener(itemClickListener);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     @Override

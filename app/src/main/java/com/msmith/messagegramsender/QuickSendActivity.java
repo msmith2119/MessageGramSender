@@ -40,6 +40,7 @@ public class QuickSendActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_qsend);
         setUpFavorites();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.msmith.messagegramsender;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.support.v4.app.NavUtils;
 import android.widget.Toast;
 
 /**
@@ -13,6 +14,9 @@ public class ToolBarActivityLauncher {
         Intent intent = null;
         switch (id) {
 
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(activity);
+                break;
             case R.id.main_activity:
                 Toast.makeText(activity, "Home selected", Toast.LENGTH_SHORT)
                         .show();
@@ -43,6 +47,12 @@ public class ToolBarActivityLauncher {
                 Toast.makeText(activity, "Quick Send  selected", Toast.LENGTH_SHORT)
                         .show();
                 intent = new Intent(activity, QuickSendActivity.class);
+                activity.startActivity(intent);
+                break;
+            case R.id.home_screen:
+                intent = new Intent(Intent.ACTION_MAIN);
+                intent.addCategory(Intent.CATEGORY_HOME);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 activity.startActivity(intent);
                 break;
             default:

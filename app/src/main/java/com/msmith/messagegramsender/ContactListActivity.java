@@ -80,6 +80,8 @@ public class ContactListActivity extends AppCompatActivity {
         };
 
         contactsView.setOnItemClickListener(itemClickListener);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     @Override
