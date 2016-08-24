@@ -131,7 +131,7 @@ public class ContactCallbackHandler implements LoaderManager.LoaderCallbacks<Cur
         mContactsList = (ListView) contactView.findViewById(R.id.list_results);
         mCursorAdapter = new SimpleCursorAdapter(
                 contactView.getContext(),
-                R.layout.contacts_list_item,
+                R.layout.contacts_search_item,
                 null,
                 FROM_COLUMNS, TO_IDS,
                 0);

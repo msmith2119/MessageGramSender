@@ -105,6 +105,7 @@ public class ContactListActivity extends AppCompatActivity {
         searchHandler = new ContactCallbackHandler(content, getLoaderManager());
         searchHandler.init();
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(id >=0 ? "Edit Contact":"Create Contact");
         builder.setView(content);
         final ContactDatabaseHelper dbHelper = new ContactDatabaseHelper(this);
         db = dbHelper.getWritableDatabase();

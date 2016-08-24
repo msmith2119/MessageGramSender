@@ -5,6 +5,9 @@
     <string name="contact">contact</string>
     <string name="enter_alias">Alias name</string>
     <string name="search_contact">Contact</string>
+    <string name="plmn_button_size">40dp</string>
+    <string name="message_name">Message name</string>
+    <string name="message_text">Message Text</string>
     <string-array name="options">
         <item>Contacts</item>
         <item>Messages</item>

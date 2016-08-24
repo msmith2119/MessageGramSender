@@ -102,6 +102,7 @@ public class MessageListActivity extends AppCompatActivity {
 
         }
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(id >=0 ? "Edit Message":"Create Message");
         builder.setView(content);
         builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
             @Override
