@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -94,6 +95,7 @@ public class SendMessageActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 sendSMSMessage(contactPhone, message.getMsg());
+                //sendSMSIntent(contactPhone,message.getMsg());
                 if (!helper.hasPacket(db, alias_id, message_id)) {
                     Packet packet = new Packet(-1, message.getName() + "->" + contact.getAlias(), alias_id, message_id);
                     helper.insertPacket(db, packet);
@@ -149,5 +151,24 @@ public class SendMessageActivity extends AppCompatActivity {
 
     private boolean hasPermission(String perm) {
         return (PackageManager.PERMISSION_GRANTED == checkSelfPermission(perm));
+    }
+
+    protected void sendSMSIntent(String phoneNum, String message) {
+        Log.i("Send SMS", "");
+        Intent smsIntent = new Intent(Intent.ACTION_VIEW);
+
+        smsIntent.setData(Uri.parse("smsto:"));
+        smsIntent.setType("vnd.android-dir/mms-sms");
+        smsIntent.putExtra("address"  , phoneNum);
+        smsIntent.putExtra("sms_body"  ,message);
+
+        try {
+            startActivity(smsIntent);
+            finish();
+            Log.i("Finished sending SMS...", "");
+        } catch (android.content.ActivityNotFoundException ex) {
+            Toast.makeText(SendMessageActivity.this,
+                    "SMS faild, please try again later.", Toast.LENGTH_SHORT).show();
+        }
     }
 }

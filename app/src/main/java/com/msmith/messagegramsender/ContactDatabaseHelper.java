@@ -246,8 +246,14 @@ public class ContactDatabaseHelper extends SQLiteOpenHelper {
             db.execSQL(CREATE_PACKET_SQL);
 
 
-            Message message = new Message("late", "running late");
+            Message message = new Message("late", "Running late. Will be there soon");
             insertMessage(db, message);
+            message.setName("onway");
+            message.setMsg("On My Way");
+            insertMessage(db,message);
+            message.setName("think");
+            message.setMsg("Thinking of you");
+            insertMessage(db,message);
 
 
         }

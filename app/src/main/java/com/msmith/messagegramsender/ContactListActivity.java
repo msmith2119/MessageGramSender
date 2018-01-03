@@ -63,7 +63,8 @@ public class ContactListActivity extends AppCompatActivity {
             adapter = new SimpleCursorAdapter(this, R.layout.contacts_list_item, cursor, new String[]{"alias", "name"}, new int[]{android.R.id.text1, android.R.id.text2}, 0);
             contactsView.setAdapter(adapter);
         } catch (SQLiteException e) {
-            Toast toast = Toast.makeText(this, "Database unavailable", Toast.LENGTH_SHORT);
+            e.printStackTrace();
+            Toast toast = Toast.makeText(this, "Database unavailable:"+e.toString(), Toast.LENGTH_SHORT);
             toast.show();
         }
 
